@@ -3,83 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ethio Aviator Game</title>
+    <title>Hahu Games - Ethiopia</title>
     <style>
-        body { font-family: sans-serif; text-align: center; background-color: #0f1923; color: white; padding: 20px; margin: 0; }
-        h1 { color: #ff3366; margin-bottom: 5px; }
-        .game-box { background: #1a2c38; padding: 25px; border-radius: 12px; max-width: 350px; margin: 20px auto; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 2px solid #2a3c48; }
-        #multiplier { font-size: 3rem; font-weight: bold; color: #00ffcc; margin: 20px 0; }
-        .btn { width: 100%; padding: 15px; font-size: 18px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; }
-        .btn-start { background-color: #ff3366; color: white; }
-        .btn-cashout { background-color: #00ffcc; color: #000; display: none; }
-        #status { margin-top: 15px; font-size: 16px; font-weight: bold; }
+        body { font-family: sans-serif; background-color: #121212; color: white; margin: 0; padding-bottom: 70px; }
+        /* Header */
+        .header { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 12px 15px; border-bottom: 1px solid #333; }
+        .logo { font-size: 1.2rem; font-weight: bold; color: #00ffcc; }
+        .wallet-box { display: flex; align-items: center; background: #262626; padding: 6px 12px; border-radius: 20px; gap: 8px; }
+        .balance { color: #00ffcc; font-weight: bold; font-size: 14px; }
+        .deposit-btn { background: #28a745; color: white; border: none; padding: 6px 14px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 14px; }
+        
+        /* Banner */
+        .banner { background: linear-gradient(135deg, #28a745, #155724); margin: 15px; padding: 20px; border-radius: 12px; text-align: center; }
+        .banner h2 { margin: 0 0 5px 0; font-size: 1.3rem; }
+        .banner p { font-size: 13px; margin: 0 0 12px 0; opacity: 0.9; }
+        .play-now { background: white; color: #155724; border: none; padding: 8px 18px; font-weight: bold; border-radius: 20px; cursor: pointer; }
+
+        /* Games Grid */
+        .section-title { padding: 0 15px; font-size: 16px; margin: 20px 0 10px 0; color: #bbb; }
+        .games-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 15px; }
+        .game-card { background: #1e1e1e; border-radius: 10px; overflow: hidden; border: 1px solid #333; cursor: pointer; text-align: center; padding-bottom: 10px; }
+        .game-card img { width: 100%; height: 110px; object-fit: cover; }
+        .game-title { font-weight: bold; font-size: 14px; margin-top: 8px; }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #1a1a1a; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #333; }
+        .nav-item { text-align: center; color: #aaa; font-size: 11px; cursor: pointer; }
+        .nav-item div { font-size: 18px; margin-bottom: 2px; }
+
+        /* Modal for Deposit */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; }
+        .modal-content { background: #1e1e1e; padding: 20px; border-radius: 12px; width: 90%; max-width: 350px; border: 1px solid #444; }
+        .modal-content h3 { color: #28a745; margin-top: 0; }
+        .modal-content input { width: 100%; padding: 10px; margin: 10px 0; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; box-sizing: border-box; }
+        .close-modal { background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 5px; font-weight: bold; }
+        .submit-deposit { background: #28a745; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; }
+
+        /* Game Screen Container */
+        #gameScreen { display: none; padding: 15px; text-align: center; }
+        #multiplier { font-size: 3.5rem; font-weight: bold; color: #00ffcc; margin: 30px 0; }
     </style>
 </head>
 <body>
-    <h1>Ethio Aviator ✈️</h1>
-    <p>አውሮፕላኑ ከመውደቁ በፊት ገንዘብዎን ይሰብስቡ!</p>
-    
-    <div class="game-box">
+
+    <!-- Main Dashboard -->
+    <div id="mainDashboard">
+        <div class="header">
+            <div class="logo">🎮 Hahu Games</div>
+            <div class="wallet-box">
+                <span class="balance" id="userBalance">10.00 ETB</span>
+                <button class="deposit-btn" onclick="openDeposit()">+ Deposit</button>
+            </div>
+        </div>
+
+        <div class="banner">
+            <h2>ሳፋሪ ሲምባ (Safari Simba)</h2>
+            <p>በመጫወት ትልቅ ሽልማት ያሸንፉ!</p>
+            <button class="play-now" onclick="alert('ጨዋታው በቅርቡ ይጀመራል!')">አሁኑኑ ይጫወቱ</button>
+        </div>
+
+        <div class="section-title">ተወዳጅ ጨዋታዎች (Featured Games)</div>
+        <div class="games-grid">
+            <div class="game-card" onclick="startAviator()">
+                <div style="background:#ff3366; height:110px; display:flex; align-items:center; justify-content:center; font-size:2rem;">✈️</div>
+                <div class="game-title">Aviator Scribe</div>
+            </div>
+            <div class="game-card" onclick="alert('Fast Keno በቅርቡ ይመጣል!')">
+                <div style="background:#3366ff; height:110px; display:flex; align-items:center; justify-content:center; font-size:2rem;">🎱</div>
+                <div class="game-title">Fast Keno</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aviator Game Screen -->
+    <div id="gameScreen">
+        <h2 style="color:#ff3366;">Ethio Aviator ✈️</h2>
         <div id="multiplier">1.00x</div>
-        <div id="status">ውርርድ ለማድረግ ቁልፉን ይጫኑ</div>
-        <button id="startBtn" class="btn btn-start" onclick="startTheGame()">ውርርድ ጀምር 🚀</button>
-        <button id="cashoutBtn" class="btn btn-cashout" onclick="cashOut()">ክፍያ ውሰድ (Cash Out) 💰</button>
+        <p id="gameStatus">ውርርድ ለማድረግ ጀምርን ይጫኑ</p>
+        <button id="playBtn" class="deposit-btn" style="padding: 12px 30px; font-size: 18px;" onclick="playAviator()">ውርርድ ጀምር 🚀</button>
+        <br><br>
+        <button class="close-modal" onclick="closeAviator()" style="background:#444;">ወደ ዋናው ገጽ ተመለስ</button>
+    </div>
+
+    <!-- Deposit Modal -->
+    <div class="modal" id="depositModal">
+        <div class="modal-content">
+            <h3>ገንዘብ ማስገቢያ (Deposit)</h3>
+            <p style="font-size: 13px; color: #ccc;">ብር ለማስገባት በዚህ የቴሌብር አካውንት ያስተላልፉ፦</p>
+            <p style="background: #2a2a2a; padding: 10px; text-align: center; font-weight: bold; color: #00ffcc; border-radius: 5px;">+251988670530</p>
+            <input type="text" id="trxId" placeholder="Transaction ID (ለምሳሌ: CE535PPHGP)">
+            <button class="submit-deposit" onclick="submitDeposit()">አረጋግጥ (Confirm)</button>
+            <button class="close-modal" onclick="closeDeposit()">ይቅር (Cancel)</button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="alert('Leaderboard')"><div>📊</div>Leaderboard</div>
+        <div class="nav-item" onclick="alert('Promo')"><div>🎁</div>Promo</div>
+        <div class="nav-item" onclick="alert('Support')"><div>🎧</div>Support</div>
+        <div class="nav-item" onclick="alert('Profile')"><div>👤</div>Profile</div>
     </div>
 
     <script>
-        let multiplier = 1.00;
-        let gameInterval;
-        let crashPoint = 0;
-        let isPlaying = false;
-        let hasCashedOut = false;
-
-        const multiplierDisplay = document.getElementById('multiplier');
-        const statusDisplay = document.getElementById('status');
-        const startBtn = document.getElementById('startBtn');
-        const cashoutBtn = document.getElementById('cashoutBtn');
-
-        function startTheGame() {
-            multiplier = 1.00;
-            isPlaying = true;
-            hasCashedOut = false;
-            multiplierDisplay.innerText = "1.00x";
-            statusDisplay.innerText = "አውሮፕላኑ እየበረረ ነው... ✈️";
-            statusDisplay.style.color = "#00ffcc";
-            
-            startBtn.style.display = "none";
-            cashoutBtn.style.display = "block";
-
-            // አውሮፕላኑ የሚወድቅበትን የዘፈቀደ ቁጥር መወሰን (ከ 1.10x እስከ 5.00x መካከል)
-            crashPoint = (Math.random() * 3.90 + 1.10).toFixed(2);
-
-            gameInterval = setInterval(() => {
-                multiplier += 0.04;
-                multiplierDisplay.innerText = multiplier.toFixed(2) + "x";
-
-                if (multiplier >= crashPoint) {
-                    clearInterval(gameInterval);
-                    isPlaying = false;
-                    if (!hasCashedOut) {
-                        multiplierDisplay.innerText = crashPoint + "x";
-                        statusDisplay.innerText = "💥 አውሮፕላኑ ወድቋል! ተሸንፈዋል!";
-                        statusDisplay.style.color = "#ff3366";
-                        cashoutBtn.style.display = "none";
-                        startBtn.style.display = "block";
-                    }
-                }
-            }, 100);
+        function openDeposit() { document.getElementById('depositModal').style.display = 'flex'; }
+        function closeDeposit() { document.getElementById('depositModal').style.display = 'none'; }
+        
+        function submitDeposit() {
+            let trx = document.getElementById('trxId').value;
+            if(trx.trim() === "") { alert("እባክዎ የTransaction ID ያስገቡ!"); return; }
+            alert("የክፍያ ጥያቄዎ ደርሷል! በቅርብ ሰዓት ውስጥ ባላንስዎ ይስተካከላል።");
+            closeDeposit();
         }
 
-        function cashOut() {
-            if (!isPlaying || hasCashedOut) return;
-            hasCashedOut = true;
-            clearInterval(gameInterval);
-            isPlaying = false;
+        function startAviator() {
+            document.getElementById('mainDashboard').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+        }
+
+        function closeAviator() {
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('mainDashboard').style.display = 'block';
+        }
+
+        let gameInterval;
+        function playAviator() {
+            let mult = 1.00;
+            let playBtn = document.getElementById('playBtn');
+            playBtn.style.display = 'none';
+            let status = document.getElementById('gameStatus');
+            status.innerText = "አውሮፕላኑ እየበረረ ነው... ✈️";
             
-            statusDisplay.innerText = `🎉 አሸንፈዋል! (${multiplier.toFixed(2)}x ተቀብለዋል)`;
-            statusDisplay.style.color = "#00ffcc";
-            cashoutBtn.style.display = "none";
-            startBtn.style.display = "block";
+            let crash = (Math.random() * 3 + 1.2).toFixed(2);
+
+            gameInterval = setInterval(() => {
+                mult += 0.05;
+                document.getElementById('multiplier').innerText = mult.toFixed(2) + "x";
+                if(mult >= crash) {
+                    clearInterval(gameInterval);
+                    document.getElementById('multiplier').innerText = crash + "x (ወድቋል 💥)";
+                    status.innerText = "ተሸንፈዋል! እንደገና ይሞክሩ።";
+                    playBtn.style.display = 'inline-block';
+                    playBtn.innerText = "እንደገና ጀምር";
+                }
+            }, 100);
         }
     </script>
 </body>
