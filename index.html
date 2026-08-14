@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethio Aviator Game</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background-color: #0f1923; color: white; padding: 20px; margin: 0; }
+        h1 { color: #ff3366; margin-bottom: 5px; }
+        .game-box { background: #1a2c38; padding: 25px; border-radius: 12px; max-width: 350px; margin: 20px auto; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 2px solid #2a3c48; }
+        #multiplier { font-size: 3rem; font-weight: bold; color: #00ffcc; margin: 20px 0; }
+        .btn { width: 100%; padding: 15px; font-size: 18px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+        .btn-start { background-color: #ff3366; color: white; }
+        .btn-cashout { background-color: #00ffcc; color: #000; display: none; }
+        #status { margin-top: 15px; font-size: 16px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Ethio Aviator ✈️</h1>
+    <p>አውሮፕላኑ ከመውደቁ በፊት ገንዘብዎን ይሰብስቡ!</p>
+    
+    <div class="game-box">
+        <div id="multiplier">1.00x</div>
+        <div id="status">ውርርድ ለማድረግ ቁልፉን ይጫኑ</div>
+        <button id="startBtn" class="btn btn-start" onclick="startTheGame()">ውርርድ ጀምር 🚀</button>
+        <button id="cashoutBtn" class="btn btn-cashout" onclick="cashOut()">ክፍያ ውሰድ (Cash Out) 💰</button>
+    </div>
+
+    <script>
+        let multiplier = 1.00;
+        let gameInterval;
+        let crashPoint = 0;
+        let isPlaying = false;
+        let hasCashedOut = false;
+
+        const multiplierDisplay = document.getElementById('multiplier');
+        const statusDisplay = document.getElementById('status');
+        const startBtn = document.getElementById('startBtn');
+        const cashoutBtn = document.getElementById('cashoutBtn');
+
+        function startTheGame() {
+            multiplier = 1.00;
+            isPlaying = true;
+            hasCashedOut = false;
+            multiplierDisplay.innerText = "1.00x";
+            statusDisplay.innerText = "አውሮፕላኑ እየበረረ ነው... ✈️";
+            statusDisplay.style.color = "#00ffcc";
+            
+            startBtn.style.display = "none";
+            cashoutBtn.style.display = "block";
+
+            // አውሮፕላኑ የሚወድቅበትን የዘፈቀደ ቁጥር መወሰን (ከ 1.10x እስከ 5.00x መካከል)
+            crashPoint = (Math.random() * 3.90 + 1.10).toFixed(2);
+
+            gameInterval = setInterval(() => {
+                multiplier += 0.04;
+                multiplierDisplay.innerText = multiplier.toFixed(2) + "x";
+
+                if (multiplier >= crashPoint) {
+                    clearInterval(gameInterval);
+                    isPlaying = false;
+                    if (!hasCashedOut) {
+                        multiplierDisplay.innerText = crashPoint + "x";
+                        statusDisplay.innerText = "💥 አውሮፕላኑ ወድቋል! ተሸንፈዋል!";
+                        statusDisplay.style.color = "#ff3366";
+                        cashoutBtn.style.display = "none";
+                        startBtn.style.display = "block";
+                    }
+                }
+            }, 100);
+        }
+
+        function cashOut() {
+            if (!isPlaying || hasCashedOut) return;
+            hasCashedOut = true;
+            clearInterval(gameInterval);
+            isPlaying = false;
+            
+            statusDisplay.innerText = `🎉 አሸንፈዋል! (${multiplier.toFixed(2)}x ተቀብለዋል)`;
+            statusDisplay.style.color = "#00ffcc";
+            cashoutBtn.style.display = "none";
+            startBtn.style.display = "block";
+        }
+    </script>
+</body>
+</html>
