@@ -1,311 +1,74 @@
 <!DOCTYPE html>
-<html lang="am">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hahu Games - Aviator</title>
+    <title>Dash Games Clone</title>
     <style>
-        body { font-family: sans-serif; background-color: #0f1215; color: white; margin: 0; padding-bottom: 50px; }
+        :root { --bg: #0f1215; --card: #1a1e26; --gold: #eebf37; --text: #ffffff; }
+        body { font-family: sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding-bottom: 70px; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #161a22; }
+        .logo { font-weight: bold; font-size: 1.2rem; }
         
-        /* Top Header */
-        .header { display: flex; justify-content: space-between; align-items: center; background: #161a22; padding: 10px 15px; border-bottom: 1px solid #2a323d; }
-        .logo-area { font-size: 1.1rem; font-weight: bold; color: #fff; display: flex; align-items: center; gap: 5px; }
-        .logo-area span { color: #ff3366; }
-        .wallet-container { display: flex; align-items: center; gap: 8px; }
-        .balance-box { background: #1e2430; padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; color: #00ffcc; border: 1px solid #2a323d; }
-        .deposit-btn { background: #28a745; color: white; border: none; padding: 6px 14px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 13px; }
+        .tab-content { display: none; padding: 15px; }
+        .active-tab { display: block; }
 
-        /* Multiplier History Bar */
-        .history-bar { display: flex; gap: 6px; padding: 8px 12px; background: #12161d; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid #222; }
-        .history-item { font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 12px; background: #1a222d; color: #00ffcc; }
-        .history-item.high { color: #ff3366; }
+        .card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid #333; }
+        .btn-gold { background: var(--gold); color: black; padding: 10px; border-radius: 8px; font-weight: bold; text-align: center; cursor: pointer; }
 
-        /* Game Screen Area */
-        .game-screen { background: radial-gradient(circle, #251224 0%, #0f1215 80%); border-bottom: 2px solid #2a323d; padding: 25px 15px; text-align: center; position: relative; }
-        .plane-icon { font-size: 3rem; margin-bottom: 5px; }
-        #multiplier { font-size: 3.2rem; font-weight: bold; color: #ffffff; letter-spacing: 1px; }
-        .online-players { position: absolute; bottom: 10px; right: 15px; background: rgba(0,0,0,0.5); padding: 3px 8px; border-radius: 10px; font-size: 11px; color: #aaa; }
+        .game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .game-box { background: #252a34; padding: 20px; border-radius: 10px; text-align: center; }
 
-        /* Betting Panels Container */
-        .bet-panels-container { padding: 10px; display: flex; flex-direction: column; gap: 10px; max-width: 500px; margin: auto; }
-        
-        /* Single Bet Panel */
-        .bet-panel { background: #161a22; border-radius: 12px; padding: 12px; border: 1px solid #2a323d; }
-        .panel-tabs { display: flex; background: #101319; border-radius: 8px; padding: 2px; margin-bottom: 10px; }
-        .tab { flex: 1; text-align: center; padding: 6px; font-size: 12px; font-weight: bold; color: #888; cursor: pointer; border-radius: 6px; }
-        .tab.active { background: #1e2430; color: white; }
-
-        .bet-controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .amount-adjuster { display: flex; align-items: center; background: #101319; border-radius: 8px; border: 1px solid #2a323d; width: 55%; overflow: hidden; }
-        .adj-btn { background: #1e2430; color: white; border: none; padding: 10px 15px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        .amount-adjuster input { background: transparent; border: none; color: white; font-size: 15px; font-weight: bold; width: 100%; text-align: center; outline: none; }
-        
-        .quick-chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 10px; }
-        .chip { background: #1e2430; border: 1px solid #2a323d; color: #ccc; padding: 5px; border-radius: 6px; font-size: 12px; text-align: center; cursor: pointer; font-weight: bold; }
-        
-        .action-btn { width: 100%; padding: 12px; font-size: 16px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; }
-        .btn-bet-style { background-color: #28a745; color: white; }
-        .btn-cashout-style { background-color: #ffc107; color: #000; display: none; }
-
-        /* Deposit Modal */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: #161a22; padding: 20px; border-radius: 12px; width: 90%; max-width: 350px; border: 1px solid #2a323d; }
-        .modal-content h3 { color: #28a745; margin-top: 0; font-size: 1.2rem; }
-        .modal-content input { width: 100%; padding: 10px; margin: 10px 0; background: #101319; border: 1px solid #2a323d; color: white; border-radius: 6px; box-sizing: border-box; }
-        .close-modal { background: #dc3545; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 5px; font-weight: bold; }
-        .submit-deposit { background: #28a745; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; }
-
-        /* Bottom Nav */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #161a22; display: flex; justify-content: space-around; padding: 8px 0; border-top: 1px solid #2a323d; z-index: 500; }
-        .nav-item { text-align: center; color: #888; font-size: 10px; cursor: pointer; }
-        .nav-item div { font-size: 16px; margin-bottom: 2px; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: #1a1e26; padding: 10px 0; border-top: 1px solid #333; }
+        .nav-item { text-align: center; font-size: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <!-- Top Header -->
     <div class="header">
-        <div class="logo-area">Hahu <span>Games</span></div>
-        <div class="wallet-container">
-            <div class="balance-box" id="topBalance">0.10 ETB</div>
-            <button class="deposit-btn" onclick="openDeposit()">+ Deposit</button>
+        <div class="logo">Dash Games</div>
+        <div style="font-size: 14px;">0.01 ETB 💰</div>
+    </div>
+
+    <!-- Home Tab -->
+    <div id="home" class="tab-content active-tab">
+        <div class="card">
+            <div style="color: var(--gold);">Got a Code?</div>
+            <div style="margin-top: 5px;">Drop it in and unlock you...</div>
+        </div>
+        <h3>Featured Games</h3>
+        <div class="game-grid">
+            <div class="game-box">✈️<br>Aviator</div>
+            <div class="game-box">🎱<br>Keno</div>
+            <div class="game-box">🎰<br>Slots</div>
         </div>
     </div>
 
-    <!-- Multiplier History Bar -->
-    <div class="history-bar">
-        <div class="history-item">2.35x</div>
-        <div class="history-item">1.31x</div>
-        <div class="history-item">1.76x</div>
-        <div class="history-item">2.80x</div>
-        <div class="history-item high">18.45x</div>
-        <div class="history-item">2.04x</div>
-        <div class="history-item">1.18x</div>
-    </div>
-
-    <!-- Game Screen -->
-    <div class="game-screen">
-        <div class="plane-icon">✈️</div>
-        <div id="multiplier">1.00x</div>
-        <div id="gameStatus" style="font-size: 13px; color: #888; margin-top: 4px;">ቀጣዩ ዙር ሊጀመር ነው...</div>
-        <div class="online-players">👥 3,011</div>
-    </div>
-
-    <!-- Dual Betting Panels Container -->
-    <div class="bet-panels-container">
-        
-        <!-- Panel 1 -->
-        <div class="bet-panel">
-            <div class="panel-tabs">
-                <div class="tab active">Bet</div>
-                <div class="tab">Auto</div>
+    <!-- Profile Tab -->
+    <div id="profile" class="tab-content">
+        <div class="card">
+            <h3>Installation</h3>
+            <p>+251968885958</p>
+            <div style="display:flex; gap:10px;">
+                <div style="flex:1;">Balance<br>0.00 ETB</div>
+                <div style="flex:1;">Credit<br>0.01 ETB</div>
             </div>
-            <div class="bet-controls-row">
-                <div class="amount-adjuster">
-                    <button class="adj-btn" onclick="changeAmount(-1, 'betInput1')">-</button>
-                    <input type="number" id="betInput1" value="4.00" min="1">
-                    <button class="adj-btn" onclick="changeAmount(1, 'betInput1')">+</button>
-                </div>
-                <span style="font-size: 12px; color: #888;">ETB</span>
-            </div>
-            <div class="quick-chips">
-                <div class="chip" onclick="setChip(16, 'betInput1')">16</div>
-                <div class="chip" onclick="setChip(40, 'betInput1')">40</div>
-                <div class="chip" onclick="setChip(80, 'betInput1')">80</div>
-                <div class="chip" onclick="setChip(400, 'betInput1')">400</div>
-            </div>
-            <button id="actionBtn1" class="action-btn btn-bet-style" onclick="handleBet(1)">Bet 4.00 ETB</button>
-        </div>
-
-        <!-- Panel 2 -->
-        <div class="bet-panel">
-            <div class="panel-tabs">
-                <div class="tab active">Bet</div>
-                <div class="tab">Auto</div>
-            </div>
-            <div class="bet-controls-row">
-                <div class="amount-adjuster">
-                    <button class="adj-btn" onclick="changeAmount(-1, 'betInput2')">-</button>
-                    <input type="number" id="betInput2" value="4.00" min="1">
-                    <button class="adj-btn" onclick="changeAmount(1, 'betInput2')">+</button>
-                </div>
-                <span style="font-size: 12px; color: #888;">ETB</span>
-            </div>
-            <div class="quick-chips">
-                <div class="chip" onclick="setChip(16, 'betInput2')">16</div>
-                <div class="chip" onclick="setChip(40, 'betInput2')">40</div>
-                <div class="chip" onclick="setChip(80, 'betInput2')">80</div>
-                <div class="chip" onclick="setChip(400, 'betInput2')">400</div>
-            </div>
-            <button id="actionBtn2" class="action-btn btn-bet-style" onclick="handleBet(2)">Bet 4.00 ETB</button>
-        </div>
-
-    </div>
-
-    <!-- Deposit Modal -->
-    <div class="modal" id="depositModal">
-        <div class="modal-content">
-            <h3>የገንዘብ ማስገቢያ (Deposit)</h3>
-            <p style="font-size: 12px; color: #ccc;">ብር ለማስገባት በቴሌብር ቁጥር ያስተላልፉ፦</p>
-            <p style="background: #101319; padding: 10px; text-align: center; font-weight: bold; color: #00ffcc; border-radius: 6px; font-size: 16px;">0968885958</p>
-            <input type="text" id="trxId" placeholder="Transaction ID (ለምሳሌ: CE535PPHGP)">
-            <button class="submit-deposit" onclick="submitDeposit()">አረጋግጥ (Confirm)</button>
-            <button class="close-modal" onclick="closeDeposit()">ይቅር (Cancel)</button>
+            <div class="btn-gold" style="margin-top:10px;">Deposit</div>
         </div>
     </div>
 
-    <!-- Bottom Navigation -->
     <div class="bottom-nav">
-        <div class="nav-item" onclick="alert('Leaderboard')"><div>📊</div>Leaderboard</div>
-        <div class="nav-item" onclick="alert('Promo')"><div>🎁</div>Promo</div>
-        <div class="nav-item" onclick="alert('Support')"><div>🎧</div>Support</div>
-        <div class="nav-item" onclick="alert('Profile')"><div>👤</div>Profile</div>
+        <div class="nav-item" onclick="showTab('home')">📊<br>Home</div>
+        <div class="nav-item">👥<br>Invite</div>
+        <div class="nav-item" style="color:var(--gold);">➕<br>Deposit</div>
+        <div class="nav-item">🎧<br>Support</div>
+        <div class="nav-item" onclick="showTab('profile')">👤<br>Profile</div>
     </div>
 
     <script>
-        let userBalance = 10.00;
-
-        function updateUI() {
-            document.getElementById('topBalance').innerText = userBalance.toFixed(2) + " ETB";
-        }
-        updateUI();
-
-        function openDeposit() { document.getElementById('depositModal').style.display = 'flex'; }
-        function closeDeposit() { document.getElementById('depositModal').style.display = 'none'; }
-
-        function submitDeposit() {
-            let trx = document.getElementById('trxId').value;
-            if(trx.trim() === "") { alert("እባክዎ የTransaction ID ያስገቡ!"); return; }
-            alert("የክፍያ ጥያቄዎ ደርሷል! በቅርብ ሰዓት ውስጥ ባላንስዎ ይስተካከላል።");
-            closeDeposit();
-        }
-
-        function changeAmount(val, inputId) {
-            let input = document.getElementById(inputId);
-            let current = parseFloat(input.value) || 0;
-            let newVal = current + val;
-            if(newVal < 1) newVal = 1;
-            input.value = newVal.toFixed(2);
-            updateButtonText(inputId);
-        }
-
-        function setChip(val, inputId) {
-            document.getElementById(inputId).value = val.toFixed(2);
-            updateButtonText(inputId);
-        }
-
-        function updateButtonText(inputId) {
-            let val = document.getElementById(inputId).value;
-            let btnId = inputId === 'betInput1' ? 'actionBtn1' : 'actionBtn2';
-            let btn = document.getElementById(btnId);
-            if(!btn.classList.contains('btn-cashout-style')) {
-                btn.innerText = `Bet ${Number(val).toFixed(2)} ETB`;
-            }
-        }
-
-        // Game Simulation Logic
-        let gameInterval;
-        let currentMultiplier = 1.00;
-        let crashPoint = 1.00;
-        let gameActive = false;
-        let activeBets = { 1: false, 2: false };
-        let betAmounts = { 1: 0, 2: 0 };
-
-        function handleBet(panelId) {
-            let btn = document.getElementById(`actionBtn${panelId}`);
-            let inputId = `betInput${panelId}`;
-            let amount = parseFloat(document.getElementById(inputId).value);
-
-            if (!gameActive) {
-                // Place Bet
-                if (amount > userBalance) {
-                    alert("የባላንስዎ መጠን በቂ አይደለም! እባክዎ Deposit ያድርጉ።");
-                    return;
-                }
-                userBalance -= amount;
-                updateUI();
-                betAmounts[panelId] = amount;
-                activeBets[panelId] = true;
-
-                btn.innerText = "Cancelled / Wait";
-                btn.style.background = "#dc3545";
-                
-                // Start game automatically if not running
-                if (!gameActive) {
-                    startAviatorGame();
-                }
-            } else {
-                // Cash Out
-                if (activeBets[panelId]) {
-                    let win = betAmounts[panelId] * currentMultiplier;
-                    userBalance += win;
-                    updateUI();
-                    activeBets[panelId] = false;
-
-                    btn.innerText = `Won ${win.toFixed(2)} ETB`;
-                    btn.style.background = "#28a745";
-                }
-            }
-        }
-
-        function startAviatorGame() {
-            gameActive = true;
-            currentMultiplier = 1.00;
-            crashPoint = (Math.random() * 3.5 + 1.15).toFixed(2);
-            let multDisplay = document.getElementById('multiplier');
-            let status = document.getElementById('gameStatus');
-            status.innerText = "አውሮፕላኑ እየበረረ ነው... ✈️";
-            status.style.color = "#00ffcc";
-
-            // Set buttons to Cash Out for active bets
-            for (let id = 1; id <= 2; id++) {
-                if (activeBets[id]) {
-                    let btn = document.getElementById(`actionBtn${id}`);
-                    btn.innerText = "Cash Out";
-                    btn.className = "action-btn btn-cashout-style";
-                }
-            }
-
-            gameInterval = setInterval(() => {
-                currentMultiplier += 0.04;
-                multDisplay.innerText = currentMultiplier.toFixed(2) + "x";
-
-                if (currentMultiplier >= crashPoint) {
-                    clearInterval(gameInterval);
-                    multDisplay.innerText = crashPoint + "x (ወድቋል 💥)";
-                    status.innerText = "አውሮፕላኑ ወድቋል!";
-                    status.style.color = "#ff3366";
-
-                    // Handle crashed bets
-                    for (let id = 1; id <= 2; id++) {
-                        if (activeBets[id]) {
-                            activeBets[id] = false;
-                            let btn = document.getElementById(`actionBtn${id}`);
-                            btn.innerText = "ተሸንፈዋል";
-                            btn.style.background = "#dc3545";
-                        }
-                    }
-
-                    // Reset for next round after 3 seconds
-                    setTimeout(() => {
-                        resetGameRound();
-                    }, 3000);
-                }
-            }, 100);
-        }
-
-        function resetGameRound() {
-            gameActive = false;
-            document.getElementById('gameStatus').innerText = "ቀጣዩ ዙር ሊጀመር ነው...";
-            document.getElementById('gameStatus').style.color = "#888";
-            
-            for (let id = 1; id <= 2; id++) {
-                let btn = document.getElementById(`actionBtn${id}`);
-                let val = document.getElementById(`betInput${id}`).value;
-                btn.className = "action-btn btn-bet-style";
-                btn.innerText = `Bet ${Number(val).toFixed(2)} ETB`;
-                btn.style.background = "#28a745";
-            }
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
+            document.getElementById(tabId).classList.add('active-tab');
         }
     </script>
 </body>
